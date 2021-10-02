@@ -54,18 +54,42 @@ void SystemClock_Config(void);
 
 volatile  uint8_t byte = 10;
 
+volatile uint8_t cmd[2] = { 0 , 0 };
+
+constexpr volatile uint8_t MOVE_FORWARD[2]{'d' , 'f'};
+constexpr volatile uint8_t MOVE_LEFT[2]{'d' , 'l'};
+
+//constexpr volatile std::string move_forward{"df"};
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(&byte) , 1, 100);
+	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
 
-	if(byte == '1')
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	if(cmd[1] == 'f')
+	{
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+	}
 
-	if(byte == '0')
-		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	if(cmd[1] == 'l')
+	{
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+	}
 
-	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(&byte) , 1);
+//	if(byte == '1')
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+
+//	if(byte == '0')
+//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(cmd) , 2);
 }
+
 
 /* USER CODE END PFP */
 
@@ -106,21 +130,18 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
-  HAL_UART_Receive_IT(&huart1, const_cast<uint8_t*>(&byte) , 1);
+    HAL_UART_Receive_IT(&huart1, const_cast<uint8_t*>(cmd) , 2);
   while (1)
   {
-
-	  //byte = HAL_UART_Receive(&huart1, &byte, 1 , 500);
-
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
