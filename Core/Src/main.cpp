@@ -22,7 +22,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-
+#include <atomic>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -51,7 +51,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
 volatile  uint8_t byte = 10;
 
 volatile uint8_t cmd[2] = { 0 , 0 };
@@ -61,22 +60,44 @@ constexpr volatile uint8_t MOVE_LEFT[2]{'d' , 'l'};
 
 //constexpr volatile std::string move_forward{"df"};
 
+void driveForward()
+{
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+}
+
+void turnLeft()
+{
+
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+}
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
 
 	if(cmd[1] == 'f')
 	{
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+		driveForward();
+//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 	}
 
 	if(cmd[1] == 'l')
 	{
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
+		turnLeft();
+//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
+//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
 	}
@@ -89,8 +110,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(cmd) , 2);
 }
-
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -102,6 +121,23 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   * @brief  The application entry point.
   * @retval int
   */
+
+volatile uint8_t xd[]{"xd"};
+
+class XYZ
+{
+public:
+	~XYZ()
+	{
+		HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(xd) , 2, 100);
+	}
+};
+
+void k()
+{
+	XYZ g;
+}
+
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -136,10 +172,17 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
-    HAL_UART_Receive_IT(&huart1, const_cast<uint8_t*>(cmd) , 2);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
+
+      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+
+  HAL_UART_Receive_IT(&huart1, const_cast<uint8_t*>(cmd) , 2);
+
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  k();
   while (1)
   {
     /* USER CODE END WHILE */
