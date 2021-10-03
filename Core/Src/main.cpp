@@ -22,7 +22,11 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include <atomic>
+#include <memory>
+#include "../Program/Processing/TaskProcessor.hpp"
+#include "../Program/Processing/EventObserver.hpp"
+#include "../Program/Processing/Event.hpp"
+#include "../Program/Processing/Dispatcher.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -183,6 +187,18 @@ int main(void)
 
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   k();
+
+  Program::EventObserver observer;
+  Program::Dispatcher dispatcher;
+
+  using namespace std::placeholders;
+
+  dispatcher.subscribe(Program::DemoEvent::descriptor,
+		  	  	  	   std::bind(&Program::EventObserver::handle , observer , _1) );
+
+  dispatcher.post(Program::DemoEvent{});
+
+
   while (1)
   {
     /* USER CODE END WHILE */
