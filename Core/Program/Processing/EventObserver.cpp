@@ -12,22 +12,10 @@
 namespace Program
 {
 
-EventObserver::EventObserver()
-{
-	// TODO Auto-generated constructor stub
-
-}
-
-EventObserver::~EventObserver()
-{
-	// TODO Auto-generated destructor stub
-}
-
 volatile uint8_t nm[2] = {'n' , 'm'};
 
 void EventObserver::handle(const IEvent& event)
 {
-
 	if( event.type() == DemoEvent::descriptor )
 	{
 

@@ -1,24 +1,23 @@
-/*
- * Task.cpp
- *
- *  Created on: Oct 3, 2021
- *      Author: Damian
- */
-
 #include "Task.hpp"
 
 namespace Program
 {
 
-Task::Task()
+Task::Task(TaskType fn , PriorityType priority):
+		task_{fn} ,
+		priority_{priority}
 {
-	// TODO Auto-generated constructor stub
 
 }
 
-Task::~Task()
+bool operator< (const Task& lhs ,const Task& rhs )
 {
-	// TODO Auto-generated destructor stub
+	return lhs.priority_ < rhs.priority_;
 }
 
-} /* namespace Program */
+void Task::operator() ()
+{
+	task_();
+}
+
+}

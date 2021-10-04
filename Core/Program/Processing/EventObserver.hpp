@@ -7,11 +7,8 @@ namespace Program
 class EventObserver
 {
 public:
-	EventObserver();
-	virtual ~EventObserver();
-
+	virtual ~EventObserver() = default;
 	void handle(const IEvent& event);
-
 };
 
 }

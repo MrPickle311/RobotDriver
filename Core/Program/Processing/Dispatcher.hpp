@@ -11,15 +11,10 @@ namespace Program
 class Dispatcher
 {
 private:
-	bool containsObserver(std::string_view str)
-	{
-
-	}
+	bool containsObserver(std::string_view str) const;
 public:
 
 	using SlotType = std::function< void( const IEvent& ) >;
-
-	Dispatcher();
 
 	void subscribe( std::string_view descriptor, SlotType&& slot );
 
@@ -27,7 +22,8 @@ public:
 
 private:
 
-	std::map< std::string_view , std::vector<SlotType> > observers_;
+	std::map< IEvent::DescriptorType , std::vector<SlotType> > observers_;
 };
+
 
 }

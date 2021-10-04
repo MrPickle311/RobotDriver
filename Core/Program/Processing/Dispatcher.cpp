@@ -6,10 +6,9 @@
 namespace Program
 {
 
-Dispatcher::Dispatcher()
+bool Dispatcher::containsObserver(std::string_view type) const
 {
-	// TODO Auto-generated constructor stub
-
+	return ! (observers_.find(type) == observers_.end());
 }
 
 void Dispatcher::subscribe( std::string_view descriptor, SlotType&& slot )
@@ -26,14 +25,7 @@ void Dispatcher::post( const IEvent& event ) const
 {
 	auto type{event.type()};
 
-//		HAL_UART_Transmit(&huart2, toBytes(type)  , 9 , 200);
-
-//	for(auto&& el : observers_)
-//	{
-//		HAL_UART_Transmit(&huart2, toBytes(el.first.data())  , 9 , 200);
-//	}
-
-	if(observers_.find(type) == observers_.end())
+	if(containsObserver(type))
 	{
 		return;
 	}
