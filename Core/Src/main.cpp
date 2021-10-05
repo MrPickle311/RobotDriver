@@ -27,6 +27,7 @@
 #include "../Program/Processing/EventObserver.hpp"
 #include "../Program/Processing/Event.hpp"
 #include "../Program/Processing/Dispatcher.hpp"
+#include <atomic>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -102,6 +103,15 @@ void turnLeft()
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
 }
 
+void turnRight()
+{
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+}
+
 volatile uint8_t isTurnOn = 0;
 
 void turnOnLed()
@@ -120,32 +130,52 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	if(htim->Instance == TIM4)
 	{
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		HAL_TIM_Base_Stop(&htim4);
+		stopEngines();
+//		HAL_TIM_Base_Stop(&htim3);
 	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
+//	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
 
 	if(cmd[1] == 'f')
 	{
 		driveForward();
+		startEngines();
+		HAL_TIM_Base_Start(&htim4);
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 	}
 
-	if(cmd[1] == 'l')
+	if(cmd[1] == 'b')
 	{
-		turnLeft();
+		driveBackward();
+		startEngines();
+		HAL_TIM_Base_Start(&htim4);
+
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 //		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
 	}
+	if(cmd[1] == 'l')
+	{
+		turnLeft();
+		startEngines();
+		HAL_TIM_Base_Start(&htim4);
+	}
+	if(cmd[1] == 'r')
+	{
+		turnRight();
+		startEngines();
+		HAL_TIM_Base_Start(&htim4);
+	}
+
 
 //	if(byte == '1')
 //		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
@@ -243,7 +273,6 @@ int main(void)
 
   dispatcher.post(Program::DemoEvent{});
 
-
   while (1)
   {
     /* USER CODE END WHILE */
@@ -283,6 +312,8 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+  std::atomic_int16_t h;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {
