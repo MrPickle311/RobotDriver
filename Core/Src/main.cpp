@@ -64,24 +64,65 @@ constexpr volatile uint8_t MOVE_LEFT[2]{'d' , 'l'};
 
 //constexpr volatile std::string move_forward{"df"};
 
+
+void startEngines()
+{
+  __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
+}
+
+void stopEngines()
+{
+  __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 0);
+}
+
 void driveForward()
 {
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
-
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
 }
 
+void driveBackward()
+{
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
+
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
+}
+
 void turnLeft()
 {
-
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
+}
+
+volatile uint8_t isTurnOn = 0;
+
+void turnOnLed()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	isTurnOn = 1;
+}
+
+void turnOffLed()
+{
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+	isTurnOn = 0;
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+{
+	if(htim->Instance == TIM4)
+	{
+		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+		HAL_TIM_Base_Stop(&htim4);
+	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -169,6 +210,7 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -187,6 +229,9 @@ int main(void)
 
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
   k();
+
+  htim4.Instance->SR = 0;
+  HAL_TIM_Base_Start_IT(&htim4);
 
   Program::EventObserver observer;
   Program::Dispatcher dispatcher;
