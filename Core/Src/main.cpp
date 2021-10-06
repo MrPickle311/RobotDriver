@@ -63,9 +63,6 @@ volatile uint8_t cmd[2] = { 0 , 0 };
 constexpr volatile uint8_t MOVE_FORWARD[2]{'d' , 'f'};
 constexpr volatile uint8_t MOVE_LEFT[2]{'d' , 'l'};
 
-//constexpr volatile std::string move_forward{"df"};
-
-
 void startEngines()
 {
   __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
@@ -130,10 +127,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	if(htim->Instance == TIM4)
 	{
-//		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
 		HAL_TIM_Base_Stop(&htim4);
 		stopEngines();
-//		HAL_TIM_Base_Stop(&htim3);
 	}
 }
 
@@ -146,10 +141,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		driveForward();
 		startEngines();
 		HAL_TIM_Base_Start(&htim4);
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
-//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
 	}
 
 	if(cmd[1] == 'b')
@@ -157,11 +148,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		driveBackward();
 		startEngines();
 		HAL_TIM_Base_Start(&htim4);
-
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0);
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_1);
-//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
 	}
 	if(cmd[1] == 'l')
 	{
@@ -175,13 +161,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		startEngines();
 		HAL_TIM_Base_Start(&htim4);
 	}
-
-
-//	if(byte == '1')
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-
-//	if(byte == '0')
-//		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
 
 	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(cmd) , 2);
 }
