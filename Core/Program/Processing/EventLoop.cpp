@@ -1,5 +1,7 @@
 #include "EventLoop.hpp"
 
+#include "../../Inc/main.h"
+
 namespace Program
 {
 
@@ -41,6 +43,12 @@ void EventLoop::start()
 	__enable_irq();
 
 	tryInvokeHandler();
+}
+
+EventLoop& EventLoop::getInstance(TaskQueue& queue)
+{
+	static EventLoop event_loop{queue};
+	return event_loop;
 }
 
 }

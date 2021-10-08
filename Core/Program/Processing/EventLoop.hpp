@@ -23,6 +23,7 @@ public:
 	EventLoop& operator=(EventLoop &&other) = delete;
 public:
 	void start();
+	static EventLoop& getInstance(TaskQueue& queue);
 };
 
 }
