@@ -5,6 +5,11 @@
 namespace Program
 {
 
+enum class BluetoothEventType
+{
+	DataArrived
+};
+
 class IEvent
 {
 public:

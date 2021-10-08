@@ -28,6 +28,7 @@
 #include "../Program/Processing/EventObserver.hpp"
 #include "../Program/Processing/Event.hpp"
 #include "../Program/Processing/Dispatcher.hpp"
+#include "../Program/Processing/EventLoop.hpp"
 #include <vector>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -246,33 +247,9 @@ int main(void)
   }
 
   HAL_UART_Receive_DMA(&huart1, const_cast<uint8_t*>(buff.data()) , 6);
-
-
   while (1)
   {
-	  // Get an access pointer to next handler
-
-	  /*
-
-	  auto task_ptr { reinterpret_cast<Task*>(&queue_.front()) };
-	  auto size_to_remove { task_ptr->getSize() };
-
-	  __enable_irq();
-	  task_ptr->exec();
-
-	  // Remove the handler information from the queue
-
-	  task_ptr->~Task();
-
-	  __disable_irq();
-
-	  queue_.popFront(size_to_remove);
-
-	  */
-
-
-
-
+	  Program::EventLoop::getInstance(Program::TaskQueue::getInstance()).start();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

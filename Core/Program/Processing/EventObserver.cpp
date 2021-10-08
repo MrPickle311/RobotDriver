@@ -33,4 +33,9 @@ void EventObserver::handle(const IEvent& event)
 	}
 }
 
+void BluetoothEventObserver::handle(const IEvent& event)
+{
+
+}
+
 } /* namespace Program */

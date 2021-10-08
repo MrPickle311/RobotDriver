@@ -15,7 +15,6 @@ public:
 
 	using TaskType = std::function<void()>;
 
-	TaskQueue();
 	virtual ~TaskQueue() = default;
 public:
 	void addTask(TaskType&& task);
