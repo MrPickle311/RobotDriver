@@ -22,12 +22,13 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "dma.h"
 #include <memory>
 #include "../Program/Processing/TaskProcessor.hpp"
 #include "../Program/Processing/EventObserver.hpp"
 #include "../Program/Processing/Event.hpp"
 #include "../Program/Processing/Dispatcher.hpp"
-#include <atomic>
+#include <vector>
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -45,12 +46,18 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
+std::vector<uint8_t> buff;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+{
+	HAL_UART_Transmit(&huart2,buff.data(), 6, 100);
+//    HAL_UART_Receive_DMA(&huart1, buff , 6);
+}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -131,7 +138,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 		stopEngines();
 	}
 }
-
+/*
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 //	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
@@ -163,7 +170,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 
 	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(cmd) , 2);
-}
+}*/
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -178,19 +185,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 volatile uint8_t xd[]{"xd"};
 
-class XYZ
-{
-public:
-	~XYZ()
-	{
-		HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(xd) , 2, 100);
-	}
-};
-
-void k()
-{
-	XYZ g;
-}
 
 int main(void)
 {
@@ -216,6 +210,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
@@ -226,18 +221,8 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
-
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-      HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
-      HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-        HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-
-  HAL_UART_Receive_IT(&huart1, const_cast<uint8_t*>(cmd) , 2);
 
   HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-  k();
 
   htim4.Instance->SR = 0;
   HAL_TIM_Base_Start_IT(&htim4);
@@ -252,8 +237,42 @@ int main(void)
 
   dispatcher.post(Program::DemoEvent{});
 
+
+  buff.reserve(6);
+
+  for(int i = 0 ; i < 6 ; ++i)
+  {
+	  buff[i] = 'a';
+  }
+
+  HAL_UART_Receive_DMA(&huart1, const_cast<uint8_t*>(buff.data()) , 6);
+
+
   while (1)
   {
+	  // Get an access pointer to next handler
+
+	  /*
+
+	  auto task_ptr { reinterpret_cast<Task*>(&queue_.front()) };
+	  auto size_to_remove { task_ptr->getSize() };
+
+	  __enable_irq();
+	  task_ptr->exec();
+
+	  // Remove the handler information from the queue
+
+	  task_ptr->~Task();
+
+	  __disable_irq();
+
+	  queue_.popFront(size_to_remove);
+
+	  */
+
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -291,8 +310,6 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-  std::atomic_int16_t h;
 
   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
   {

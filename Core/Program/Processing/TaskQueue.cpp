@@ -10,8 +10,9 @@ TaskQueue::TaskQueue() {
 
 Task TaskQueue::getTask()
 {
-	auto task{std::move(tasks_.top())};
-//	return tasks_.pop();
+	auto task{std::move(tasks_.front())};
+	tasks_.pop();
+	return task;
 }
 
 bool TaskQueue::isEmpty() const

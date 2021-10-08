@@ -2,7 +2,8 @@
 
 #include <queue>
 #include <any>
-#include "Task.hpp"
+//#include "Task.hpp"
+#include <functional>
 
 namespace Program
 {
@@ -10,7 +11,7 @@ namespace Program
 class TaskQueue
 {
 private:
-	std::priority_queue<Task> tasks_;
+	std::queue<std::function<void()>> tasks_;
 public:
 	TaskQueue();
 	virtual ~TaskQueue() = default;

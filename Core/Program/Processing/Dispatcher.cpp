@@ -1,8 +1,8 @@
 #include "Dispatcher.hpp"
 
 #include "../../Inc/main.h"
-
 #include "../../Inc/usart.h"
+
 namespace Program
 {
 
@@ -18,7 +18,7 @@ void Dispatcher::subscribe( std::string_view descriptor, SlotType&& slot )
 
 uint8_t* toBytes(const char* str)
 {
-	return  const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(str));
+	return const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(str));
 }
 
 void Dispatcher::post( const IEvent& event ) const

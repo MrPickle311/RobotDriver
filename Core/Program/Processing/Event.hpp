@@ -24,6 +24,11 @@ public:
 	virtual DescriptorType type() const;
 };
 
+class BluetoothDataArrived : public IEvent
+{
+	static constexpr auto descriptor{"BluetoothDataArrived"};
 
+
+};
 
 }
