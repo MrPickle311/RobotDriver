@@ -237,6 +237,9 @@ int main(void)
 		  	  	  	   std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
 
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
+  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+  dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
 
 //  buff.reserve(6);
