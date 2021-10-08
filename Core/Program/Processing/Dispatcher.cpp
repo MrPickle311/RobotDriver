@@ -1,17 +1,14 @@
 #include "Dispatcher.hpp"
 
-#include "../../Inc/main.h"
-#include "../../Inc/usart.h"
-
 namespace Program
 {
 
-bool Dispatcher::containsObserver(std::string_view type) const
+bool Dispatcher::containsObserver(Dispatcher::DescriptorType type) const
 {
 	return ! (observers_.find(type) == observers_.end());
 }
 
-void Dispatcher::subscribe( std::string_view descriptor, SlotType&& slot )
+void Dispatcher::subscribe(Dispatcher::DescriptorType descriptor , SlotType&& slot )
 {
 	observers_[descriptor].push_back(slot);
 }
@@ -23,14 +20,14 @@ uint8_t* toBytes(const char* str)
 
 void Dispatcher::post( const IEvent& event ) const
 {
-	auto type{event.type()};
+	auto group{event.group()};
 
-	if(containsObserver(type))
+	if(!containsObserver(group))
 	{
 		return;
 	}
 
-	for(auto&& observer : observers_.at(type))
+	for(auto&& observer : observers_.at(group))
 	{
 		observer(event);
 	}

@@ -228,25 +228,29 @@ int main(void)
   htim4.Instance->SR = 0;
   HAL_TIM_Base_Start_IT(&htim4);
 
-  Program::EventObserver observer;
+  Program::BluetoothEventObserver observer;
   Program::Dispatcher dispatcher;
 
   using namespace std::placeholders;
 
-  dispatcher.subscribe(Program::DemoEvent::descriptor,
-		  	  	  	   std::bind(&Program::EventObserver::handle , observer , _1) );
+  dispatcher.subscribe(Program::EventGroup::BluetoothEvents,
+		  	  	  	   std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
 
-  dispatcher.post(Program::DemoEvent{});
+  dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
 
-  buff.reserve(6);
+//  buff.reserve(6);
+//
+//  for(int i = 0 ; i < 6 ; ++i)
+//  {
+//	  buff[i] = 'a';
+//  }
+//
+//  HAL_UART_Receive_DMA(&huart1, const_cast<uint8_t*>(buff.data()) , 6);
 
-  for(int i = 0 ; i < 6 ; ++i)
-  {
-	  buff[i] = 'a';
-  }
 
-  HAL_UART_Receive_DMA(&huart1, const_cast<uint8_t*>(buff.data()) , 6);
+
+
   while (1)
   {
 	  Program::EventLoop::getInstance(Program::TaskQueue::getInstance()).start();

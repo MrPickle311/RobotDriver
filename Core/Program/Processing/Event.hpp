@@ -10,30 +10,37 @@ enum class BluetoothEventType
 	DataArrived
 };
 
+enum class EventGroup
+{
+	BluetoothEvents
+};
+
 class IEvent
 {
 public:
 	virtual ~IEvent() = default;
 public:
-	using DescriptorType = std::string_view ;
-	virtual DescriptorType type() const = 0;
+	using EventGroupType  =  EventGroup;
+	using EventDescriptorType = std::string_view;
+
+	virtual EventGroupType group() const = 0;
+	virtual EventDescriptorType what() const = 0;
 };
 
-class DemoEvent : public IEvent
+class BluetoothEvent : public IEvent
 {
+private:
+	static constexpr auto event_group{EventGroupType::BluetoothEvents};
 public:
-	DemoEvent() = default;
-
-	static constexpr auto descriptor{"DemoEvent"};
-
-	virtual DescriptorType type() const;
+	virtual EventGroupType group() const override;
 };
 
-class BluetoothDataArrived : public IEvent
+class BluetoothDataArrivedEvent : public BluetoothEvent
 {
-	static constexpr auto descriptor{"BluetoothDataArrived"};
-
-
+private:
+	static constexpr auto what_{"DataArrived"};
+public:
+	virtual EventDescriptorType what() const override;
 };
 
 }

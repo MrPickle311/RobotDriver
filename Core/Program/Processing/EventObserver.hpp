@@ -7,10 +7,6 @@
 namespace Program
 {
 
-enum class EventGroupType
-{
-	BluetoothEvents
-};
 
 class IEventObserver
 {
@@ -18,21 +14,16 @@ public:
 	virtual void handle(const IEvent& event) = 0;
 };
 
-class EventObserver
+class EventCallbacksStorage
 {
 public:
-	virtual ~EventObserver() = default;
-	void handle(const IEvent& event);
-};
-
-class EventTypeStorage
-{
+	using EventDescriptorType = std::string_view;
+	using EventCallbackType = std::function<void()>;
 protected:
-	std::map<std::string_view , std::function<void()>> events_group_;
+	std::map<EventDescriptorType , EventCallbackType > events_group_;
 public:
-	void appendEvent()
+	void subscribeEvent(EventDescriptorType event_type , EventCallbackType&& callback );
 };
-
 
 class BluetoothEventObserver : public IEventObserver
 {

@@ -3,9 +3,14 @@
 namespace Program
 {
 
-IEvent::DescriptorType DemoEvent::type() const
+IEvent::EventGroupType BluetoothEvent::group() const
 {
-	return descriptor;
+	return BluetoothEvent::event_group;
+}
+
+IEvent::EventDescriptorType BluetoothDataArrivedEvent::what() const
+{
+	return BluetoothDataArrivedEvent::what_;
 }
 
 }

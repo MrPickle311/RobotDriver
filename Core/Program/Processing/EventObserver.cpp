@@ -1,10 +1,3 @@
-/*
- * EventObserver.cpp
- *
- *  Created on: Oct 3, 2021
- *      Author: Damian
- */
-
 #include "EventObserver.hpp"
 #include "../../Inc/main.h"
 #include "../../Inc/usart.h"
@@ -12,30 +5,17 @@
 namespace Program
 {
 
-volatile uint8_t nm[2] = {'n' , 'm'};
-
-void EventObserver::handle(const IEvent& event)
+void EventCallbacksStorage::subscribeEvent(EventDescriptorType event_type , EventCallbackType&& callback )
 {
-	if( event.type() == DemoEvent::descriptor )
-	{
-
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		// This demonstrates how to obtain the underlying event type in case a
-		// slot is set up to handle multiple events of different types.
-
-		const DemoEvent& demoEvent{static_cast<const DemoEvent&>(event)};
-
-		const  uint8_t* t = reinterpret_cast<const uint8_t*>( demoEvent.type().data() );
-
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-		HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
-		HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(t) , 8 , 200);
-	}
+	events_group_[event_type] = std::move(callback);
 }
+
+volatile uint8_t nm[2] = {'n' , 'm'};
 
 void BluetoothEventObserver::handle(const IEvent& event)
 {
-
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
 }
 
-} /* namespace Program */
+}
