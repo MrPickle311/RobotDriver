@@ -1,19 +1,64 @@
-/*
- * UartDevice.cpp
- *
- *  Created on: Oct 7, 2021
- *      Author: Damian
- */
-
 #include "UartDevice.hpp"
+#include "../Processing/TaskQueue.hpp"
 
 namespace Program
 {
 
 UartDevice::UartDevice()
 {
-	// TODO Auto-generated constructor stub
+}
+
+void UartDevice::dataArrived()
+{
+	HAL_UART_Transmit(&huart2,buffer_.data(), 6, 100);
+}
+
+void UartDevice::dataTransmitted()
+{
 
 }
 
-} /* namespace Program */
+void UartDevice::waitForData(uint16_t bytes_count)
+{
+	if(bytes_count != buffer_.size())
+	{
+		resizeBuffer(bytes_count);
+	}
+
+	HAL_UART_Receive_DMA(&huart1, buffer_.data() , bytes_count);
+}
+
+void UartDevice::transmitData(std::vector<uint8_t> bytes)
+{
+	HAL_UART_Transmit_DMA(&huart1, bytes.data(), bytes.size());
+}
+
+std::vector<uint8_t> UartDevice::getBufferedData()
+{
+	return buffer_;
+}
+
+void UartDevice::resizeBuffer( uint16_t size)
+{
+	buffer_.resize(size);
+}
+
+
+UartDevice& UartDevice::getInstance()
+{
+	static UartDevice uart;
+
+	return uart;
+}
+
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
+{
+	Program::UartDevice::getInstance().dataArrived();
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef* huart)
+{
+	Program::UartDevice::getInstance().dataTransmitted();
+}

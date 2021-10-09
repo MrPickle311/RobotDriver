@@ -30,6 +30,7 @@
 #include "../Program/Processing/Dispatcher.hpp"
 #include "../Program/Processing/EventLoop.hpp"
 #include <vector>
+#include "../Program/Devices/UartDevice.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -47,18 +48,12 @@
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
 
-std::vector<uint8_t> buff;
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart)
-{
-	HAL_UART_Transmit(&huart2,buff.data(), 6, 100);
-//    HAL_UART_Receive_DMA(&huart1, buff , 6);
-}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -241,18 +236,7 @@ int main(void)
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
-
-//  buff.reserve(6);
-//
-//  for(int i = 0 ; i < 6 ; ++i)
-//  {
-//	  buff[i] = 'a';
-//  }
-//
-//  HAL_UART_Receive_DMA(&huart1, const_cast<uint8_t*>(buff.data()) , 6);
-
-
-
+  Program::UartDevice::getInstance().waitForData(6);
 
   while (1)
   {

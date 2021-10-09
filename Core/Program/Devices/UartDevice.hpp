@@ -2,6 +2,8 @@
 
 #include "../../Inc/usart.h"
 
+#include <vector>
+
 namespace Program
 {
 
@@ -13,6 +15,8 @@ namespace Program
 //uobiektowienie urządzenia
 class UartDevice
 {
+private:
+	std::vector<uint8_t> buffer_;
 public:
 	UartDevice();
 	virtual ~UartDevice() = default;
@@ -21,7 +25,15 @@ public:
 	UartDevice& operator=(const UartDevice &other) = delete;
 	UartDevice& operator=(UartDevice &&other) = delete;
 public:
+	void dataArrived();//creates event
+	void dataTransmitted();//creates event
+	void waitForData(uint16_t bytes_count);
+	void transmitData(std::vector<uint8_t> bytes);
+	std::vector<uint8_t> getBufferedData();
 
+	void resizeBuffer(uint16_t size);
+
+	static UartDevice& getInstance();
 };
 
 //ta klasa będzie pewną konkretyzacją i ukształtowaniem urzadzenia
