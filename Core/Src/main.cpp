@@ -31,6 +31,7 @@
 #include "../Program/Processing/EventLoop.hpp"
 #include <vector>
 #include "../Program/Devices/UartDevice.hpp"
+#include "../Program/Environment/BluetoothPort.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -236,6 +237,7 @@ int main(void)
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
+  Program::BluetoothPort::getInstance();
   Program::UartDevice::getInstance().waitForData(6);
 
   while (1)

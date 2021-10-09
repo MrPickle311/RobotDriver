@@ -10,12 +10,18 @@ UartDevice::UartDevice()
 
 void UartDevice::dataArrived()
 {
-	HAL_UART_Transmit(&huart2,buffer_.data(), 6, 100);
+	if(on_data_arrived_action)
+	{
+		on_data_arrived_action(buffer_);
+	}
 }
 
 void UartDevice::dataTransmitted()
 {
-
+	if(on_data_transmitted_action)
+	{
+		on_data_transmitted_action(buffer_);
+	}
 }
 
 void UartDevice::waitForData(uint16_t bytes_count)
@@ -28,17 +34,17 @@ void UartDevice::waitForData(uint16_t bytes_count)
 	HAL_UART_Receive_DMA(&huart1, buffer_.data() , bytes_count);
 }
 
-void UartDevice::transmitData(std::vector<uint8_t> bytes)
+void UartDevice::transmitData(UartDevice::StorageType<DataType> bytes)
 {
 	HAL_UART_Transmit_DMA(&huart1, bytes.data(), bytes.size());
 }
 
-std::vector<uint8_t> UartDevice::getBufferedData()
+ UartDevice::StorageType<UartDevice::DataType> UartDevice::getBufferedData()
 {
 	return buffer_;
 }
 
-void UartDevice::resizeBuffer( uint16_t size)
+void UartDevice::resizeBuffer(uint16_t size)
 {
 	buffer_.resize(size);
 }

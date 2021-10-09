@@ -3,20 +3,22 @@
 #include "../../Inc/usart.h"
 
 #include <vector>
-
+#include <functional>
 namespace Program
 {
 
-//do device to jakoś trzeba powiązać bezpośrednio hala
-//np. będzie uart1 , uart2
-//to będzie takie direct IO ,
-//urządzenia zrób jako singletony
-//tutaj będzie bezpośredni bajtowy IO
-//uobiektowienie urządzenia
 class UartDevice
 {
+public:
+	using DataType = uint8_t;
+	template<typename T>
+	using StorageType = std::vector<T>;
+	using ActionHandlerType = std::function<void(const std::vector<uint8_t>&)>;
 private:
-	std::vector<uint8_t> buffer_;
+	 StorageType<DataType> buffer_;
+public:
+	ActionHandlerType on_data_arrived_action;
+	ActionHandlerType on_data_transmitted_action;
 public:
 	UartDevice();
 	virtual ~UartDevice() = default;
@@ -28,16 +30,17 @@ public:
 	void dataArrived();//creates event
 	void dataTransmitted();//creates event
 	void waitForData(uint16_t bytes_count);
-	void transmitData(std::vector<uint8_t> bytes);
-	std::vector<uint8_t> getBufferedData();
+	void transmitData(StorageType<DataType> bytes);
+	StorageType<DataType> getBufferedData();
 
 	void resizeBuffer(uint16_t size);
 
 	static UartDevice& getInstance();
 };
 
-//ta klasa będzie pewną konkretyzacją i ukształtowaniem urzadzenia
-//deskryptor roli urządzenia
+//Driver splittes incoming/outgoing data into several parts
+//multiton or normal object
+//it stores rules for data splitting
 class UartDriver
 {
 
