@@ -20,9 +20,11 @@ public:
 
 	void post( const IEvent& event ) const;
 
+	static Dispatcher& getInstance();
 private:
 
 	std::map< DescriptorType , SlotType > observers_;
+
 };
 
 

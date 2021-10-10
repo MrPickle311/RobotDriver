@@ -25,4 +25,11 @@ void Dispatcher::post( const IEvent& event ) const
 	observers_.at(group)(event);
 }
 
+Dispatcher&  Dispatcher::getInstance()
+{
+	static Dispatcher dispatcher;
+
+	return dispatcher;
+}
+
 }

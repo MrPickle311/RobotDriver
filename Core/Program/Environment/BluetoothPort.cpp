@@ -1,5 +1,7 @@
 #include "BluetoothPort.hpp"
 
+#include "../Processing/Dispatcher.hpp"
+
 namespace Program
 {
 
@@ -13,9 +15,11 @@ BluetoothPort::BluetoothPort()
 
 void BluetoothPort::parseIncomingData(const std::vector<uint8_t>& data)
 {
-	TaskQueue::getInstance().addTask([&data]{
-			HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(data.data()) , data.size(), 100);
-	});
+	Dispatcher::getInstance().post(BluetoothDataArrivedEvent{});
+
+//	TaskQueue::getInstance().addTask([&data]{
+//			HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(data.data()) , data.size(), 100);
+//	});
 }
 
 void BluetoothPort::postTaskToTaskQueue(BluetoothEvent&& event)

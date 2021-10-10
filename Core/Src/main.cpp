@@ -213,7 +213,8 @@ int main(void)
   Program::PwmGenerator::getInstance().setPwmSignalFilling(999);
 
   Program::BluetoothEventObserver observer;
-  Program::Dispatcher dispatcher;
+
+  auto& dispatcher = Program::Dispatcher::getInstance();
 
   using namespace std::placeholders;
 
@@ -221,8 +222,9 @@ volatile uint8_t nm[2] = {'n' , 'm'};
   observer.subscribeEventResponse(Program::BluetoothDataArrivedEvent::event_descriptor ,
 		  [&nm]
 		   {
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
+//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+//	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
+	HAL_UART_Transmit(&huart2, Program::UartDevice::getInstance().getBufferedData().data() , 2 , 200);
 		   });
 
   dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
