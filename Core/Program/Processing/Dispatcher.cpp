@@ -8,14 +8,9 @@ bool Dispatcher::containsObserver(Dispatcher::DescriptorType type) const
 	return ! (observers_.find(type) == observers_.end());
 }
 
-void Dispatcher::subscribe(Dispatcher::DescriptorType descriptor , SlotType&& slot )
+void Dispatcher::subscribeEventGroup(Dispatcher::DescriptorType descriptor , SlotType&& slot )
 {
-	observers_[descriptor].push_back(slot);
-}
-
-uint8_t* toBytes(const char* str)
-{
-	return const_cast<uint8_t*>(reinterpret_cast<const uint8_t*>(str));
+	observers_[descriptor] = slot;
 }
 
 void Dispatcher::post( const IEvent& event ) const
@@ -27,10 +22,7 @@ void Dispatcher::post( const IEvent& event ) const
 		return;
 	}
 
-	for(auto&& observer : observers_.at(group))
-	{
-		observer(event);
-	}
+	observers_.at(group)(event);
 }
 
 }

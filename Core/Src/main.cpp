@@ -24,13 +24,14 @@
 #include "gpio.h"
 #include "dma.h"
 #include <memory>
-#include "../Program/Processing/TaskProcessor.hpp"
 #include "../Program/Processing/EventObserver.hpp"
 #include "../Program/Processing/Event.hpp"
 #include "../Program/Processing/Dispatcher.hpp"
 #include "../Program/Processing/EventLoop.hpp"
 #include <vector>
 #include "../Program/Devices/UartDevice.hpp"
+#include "../Program/Devices/PwmGenerator.hpp"
+#include "../Program/Devices/Timer.hpp"
 #include "../Program/Environment/BluetoothPort.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -127,14 +128,6 @@ void turnOffLed()
 	isTurnOn = 0;
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
-{
-	if(htim->Instance == TIM4)
-	{
-		HAL_TIM_Base_Stop(&htim4);
-		stopEngines();
-	}
-}
 /*
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -180,9 +173,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   * @retval int
   */
 
-volatile uint8_t xd[]{"xd"};
-
-
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -219,26 +209,31 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-
-  htim4.Instance->SR = 0;
-  HAL_TIM_Base_Start_IT(&htim4);
+  Program::PwmGenerator::getInstance().startGenerating();
+  Program::PwmGenerator::getInstance().setPwmSignalFilling(999);
 
   Program::BluetoothEventObserver observer;
   Program::Dispatcher dispatcher;
 
   using namespace std::placeholders;
 
-  dispatcher.subscribe(Program::EventGroup::BluetoothEvents,
-		  	  	  	   std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
+volatile uint8_t nm[2] = {'n' , 'm'};
+  observer.subscribeEventResponse(Program::BluetoothDataArrivedEvent::event_descriptor ,
+		  [&nm]
+		   {
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
+	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
+		   });
+
+  dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
+		  	  	  	  	  	  	 std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
 
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
   dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
-  Program::BluetoothPort::getInstance();
-  Program::UartDevice::getInstance().waitForData(6);
+  Program::BluetoothPort::getInstance().waitForCommands();
 
   while (1)
   {

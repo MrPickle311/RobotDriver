@@ -16,13 +16,13 @@ public:
 private:
 	bool containsObserver(DescriptorType descriptor) const;
 public:
-	void subscribe(DescriptorType descriptor, SlotType&& slot );
+	void subscribeEventGroup(DescriptorType descriptor, SlotType&& slot );
 
 	void post( const IEvent& event ) const;
 
 private:
 
-	std::map< DescriptorType , std::vector<SlotType> > observers_;
+	std::map< DescriptorType , SlotType > observers_;
 };
 
 

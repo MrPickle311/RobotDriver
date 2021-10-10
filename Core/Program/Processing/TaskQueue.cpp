@@ -15,10 +15,10 @@ bool TaskQueue::isEmpty() const
 	return tasks_.empty();
 }
 
-void TaskQueue::addTask(TaskType&& task)
-{
-	tasks_.push(task);
-}
+//void TaskQueue::addTask(TaskT&& task)
+//{
+//	tasks_.push(task);
+//}
 
 TaskQueue& TaskQueue::getInstance()
 {

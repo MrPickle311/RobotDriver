@@ -30,4 +30,10 @@ BluetoothPort& BluetoothPort::getInstance()
 	return port;
 }
 
+void BluetoothPort::waitForCommands()
+{
+	UartDevice::getInstance().waitForData(2);
+}
+
+
 }

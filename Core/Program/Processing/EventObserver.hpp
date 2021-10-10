@@ -22,10 +22,12 @@ public:
 protected:
 	std::map<EventDescriptorType , EventCallbackType > events_group_;
 public:
-	void subscribeEvent(EventDescriptorType event_type , EventCallbackType&& callback );
+	void subscribeEventResponse(EventDescriptorType event_type , EventCallbackType&& callback );
 };
 
-class BluetoothEventObserver : public IEventObserver
+class BluetoothEventObserver :
+		public IEventObserver ,
+		public EventCallbacksStorage
 {
 public:
 	virtual void handle(const IEvent& event);

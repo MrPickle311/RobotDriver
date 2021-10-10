@@ -10,7 +10,7 @@ IEvent::EventGroupType BluetoothEvent::group() const
 
 IEvent::EventDescriptorType BluetoothDataArrivedEvent::what() const
 {
-	return BluetoothDataArrivedEvent::what_;
+	return BluetoothDataArrivedEvent::event_descriptor;
 }
 
 }

@@ -17,7 +17,11 @@ public:
 
 	virtual ~TaskQueue() = default;
 public:
-	void addTask(TaskType&& task);
+	template<typename TaskT>
+	void addTask(TaskT&& task)
+	{
+		tasks_.push(task);
+	}
 	TaskType getTask();
 	bool isEmpty() const;
 

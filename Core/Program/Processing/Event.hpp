@@ -37,8 +37,8 @@ public:
 
 class BluetoothDataArrivedEvent : public BluetoothEvent
 {
-private:
-	static constexpr auto what_{"DataArrived"};
+public:
+	static constexpr auto event_descriptor{"DataArrived"};
 public:
 	virtual EventDescriptorType what() const override;
 };

@@ -18,6 +18,7 @@ public:
 	BluetoothPort& operator=(BluetoothPort &&other) = delete;
 	virtual ~BluetoothPort() = default;
 public:
+	void waitForCommands();
 	void parseIncomingData(const std::vector<uint8_t>& data);
 	void postTaskToTaskQueue(BluetoothEvent&& event);
 
