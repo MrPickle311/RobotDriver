@@ -224,7 +224,10 @@ volatile uint8_t nm[2] = {'n' , 'm'};
 		   {
 //	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 //	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
-	HAL_UART_Transmit(&huart2, Program::UartDevice::getInstance().getBufferedData().data() , 2 , 200);
+	  Program::PwmGenerator::getInstance().setPwmSignalFilling(999);
+	  driveForward();
+	  Program::Timer::getInstance().startTimer();
+	  HAL_UART_Transmit(&huart2, Program::UartDevice::getInstance().getBufferedData().data() , 2 , 200);
 		   });
 
   dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
