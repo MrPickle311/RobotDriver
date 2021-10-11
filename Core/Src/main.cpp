@@ -33,6 +33,7 @@
 #include "../Program/Devices/PwmGenerator.hpp"
 #include "../Program/Devices/Timer.hpp"
 #include "../Program/Environment/BluetoothPort.hpp"
+#include "../Program/Devices/GpioDevice.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -233,12 +234,18 @@ volatile uint8_t nm[2] = {'n' , 'm'};
   dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
 		  	  	  	  	  	  	 std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
 
-  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
+//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
-  Program::BluetoothPort::getInstance().waitForCommands();
+  using namespace Program;
+
+  BluetoothPort::getInstance().waitForCommands();
+
+  GpioDevice< GPIO::A , GPIO_PIN_5 >::setHigh();
+
+//  GpioDevice<GPIO::A , GPIO_PIN_5>::setLow();
 
   while (1)
   {

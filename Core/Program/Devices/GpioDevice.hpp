@@ -1,25 +1,39 @@
-/*
- * GpioDevice.hpp
- *
- *  Created on: 11 paź 2021
- *      Author: macma
- */
+#include "../Inc/gpio.h"
+#include "main.h"
 
-#ifndef PROGRAM_DEVICES_GPIODEVICE_HPP_
-#define PROGRAM_DEVICES_GPIODEVICE_HPP_
+namespace Program
+{
 
-namespace Program {
+enum class GPIO
+{
+	A = GPIOA_BASE ,
+	B = GPIOB_BASE ,
+	C = GPIOC_BASE ,
+	D = GPIOD_BASE ,
+	E = GPIOE_BASE ,
+};
 
-class GpioDevice {
+template<auto Port , auto Pin>
+class GpioDevice
+{
 public:
-	GpioDevice();
 	virtual ~GpioDevice() = default;
 	GpioDevice(const GpioDevice &other) = delete;
 	GpioDevice(GpioDevice &&other) = delete;
 	GpioDevice& operator=(const GpioDevice &other) = delete;
 	GpioDevice& operator=(GpioDevice &&other) = delete;
+
+	static void setHigh()
+	{
+		HAL_GPIO_WritePin( reinterpret_cast<GPIO_TypeDef*>(Port) , Pin , GPIO_PIN_SET);
+	}
+
+	static void setLow()
+	{
+		HAL_GPIO_WritePin( reinterpret_cast<GPIO_TypeDef*>(Port) , Pin , GPIO_PIN_RESET);
+	}
 };
 
-} /* namespace Program */
 
-#endif /* PROGRAM_DEVICES_GPIODEVICE_HPP_ */
+
+}
