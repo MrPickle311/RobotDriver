@@ -241,11 +241,13 @@ volatile uint8_t nm[2] = {'n' , 'm'};
 
   using namespace Program;
 
+
+
   BluetoothPort::getInstance().waitForCommands();
 
   GpioDevice< GPIO::A , GPIO_PIN_5 >::setHigh();
 
-//  GpioDevice<GPIO::A , GPIO_PIN_5>::setLow();
+  GpioDevice<GPIO::A , GPIO_PIN_5>::setLow();
 
   while (1)
   {
