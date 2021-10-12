@@ -1,10 +1,12 @@
+#pragma once
+
 #include "../Inc/gpio.h"
 #include "main.h"
 
 namespace Program
 {
 
-enum class GPIO
+enum class PORT
 {
 	A = GPIOA_BASE ,
 	B = GPIOB_BASE ,

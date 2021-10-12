@@ -11,36 +11,37 @@ Engines::Engines() {
 	Timer::getInstance().on_timeout_handler_ = [this]{
 			stopEngines();
 	};
-	Timer::getInstance().setTimeout(20);
+//	Timer::getInstance().setTimeout(990);
 }
 
 void Engines::setLeftEngineDriveForward()
 {
-	GpioDevice<GPIO::B , 0>::setHigh();
-	GpioDevice<GPIO::B , 1>::setLow();
+	GpioDevice<PORT::B , GPIO_PIN_0>::setHigh();
+	GpioDevice<PORT::B , GPIO_PIN_1>::setLow();
 }
 
 void Engines::setLeftEngineDriveBackwards()
 {
-	GpioDevice<GPIO::B , 0>::setLow();
-	GpioDevice<GPIO::B , 1>::setHigh();
+	GpioDevice<PORT::B , GPIO_PIN_0>::setLow();
+	GpioDevice<PORT::B , GPIO_PIN_1>::setHigh();
 }
 
 void Engines::setRightEngineDriveForward()
 {
-	GpioDevice<GPIO::C , 0>::setHigh();
-	GpioDevice<GPIO::C , 1>::setLow();
+	GpioDevice<PORT::C , GPIO_PIN_0>::setHigh();
+	GpioDevice<PORT::C , GPIO_PIN_1>::setLow();
 }
 
 void Engines::setRightEngineDriveBackwards()
 {
-	GpioDevice<GPIO::C , 0>::setLow();
-	GpioDevice<GPIO::C , 1>::setHigh();
+	GpioDevice<PORT::C , GPIO_PIN_0>::setLow();
+	GpioDevice<PORT::C , GPIO_PIN_1>::setHigh();
 }
 
 void Engines::runEngines()
 {
 	PwmGenerator::getInstance().setPwmSignalFilling(999);
+	Timer::getInstance().startTimer();
 }
 
 void Engines::stopEngines()

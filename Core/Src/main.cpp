@@ -34,6 +34,7 @@
 #include "../Program/Devices/Timer.hpp"
 #include "../Program/Environment/BluetoothPort.hpp"
 #include "../Program/Devices/GpioDevice.hpp"
+#include "../Program/Environment/Engines.hpp"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -65,55 +66,6 @@ void SystemClock_Config(void);
 volatile  uint8_t byte = 10;
 
 volatile uint8_t cmd[2] = { 0 , 0 };
-
-constexpr volatile uint8_t MOVE_FORWARD[2]{'d' , 'f'};
-constexpr volatile uint8_t MOVE_LEFT[2]{'d' , 'l'};
-
-void startEngines()
-{
-  __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
-}
-
-void stopEngines()
-{
-  __HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 0);
-}
-
-void driveForward()
-{
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-}
-
-void driveBackward()
-{
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-}
-
-void turnLeft()
-{
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_RESET);
-
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_SET);
-}
-
-void turnRight()
-{
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, GPIO_PIN_SET);
-
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_1, GPIO_PIN_RESET);
-}
 
 volatile uint8_t isTurnOn = 0;
 
@@ -211,7 +163,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   Program::PwmGenerator::getInstance().startGenerating();
-  Program::PwmGenerator::getInstance().setPwmSignalFilling(999);
 
   Program::BluetoothEventObserver observer;
 
@@ -219,35 +170,19 @@ int main(void)
 
   using namespace std::placeholders;
 
-volatile uint8_t nm[2] = {'n' , 'm'};
   observer.subscribeEventResponse(Program::BluetoothDataArrivedEvent::event_descriptor ,
-		  [&nm]
+		  []
 		   {
-//	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-//	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(nm) , 2 , 200);
-	  Program::PwmGenerator::getInstance().setPwmSignalFilling(999);
-	  driveForward();
-	  Program::Timer::getInstance().startTimer();
-	  HAL_UART_Transmit(&huart2, Program::UartDevice::getInstance().getBufferedData().data() , 2 , 200);
+				   Program::Engines::getInstance().driveForward();
 		   });
 
-  dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
+  	  dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
 		  	  	  	  	  	  	 std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
-
-//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
-//  dispatcher.post(Program::BluetoothDataArrivedEvent{});
 
   using namespace Program;
 
-
-
+//  Engines::getInstance().
   BluetoothPort::getInstance().waitForCommands();
-
-  GpioDevice< GPIO::A , GPIO_PIN_5 >::setHigh();
-
-  GpioDevice<GPIO::A , GPIO_PIN_5>::setLow();
 
   while (1)
   {

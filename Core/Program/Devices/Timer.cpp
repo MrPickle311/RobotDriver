@@ -35,7 +35,7 @@ void Timer::stopTimer()
 
 void Timer::setTimeout(uint16_t milliseconds)
 {
-	__HAL_TIM_SET_COUNTER(&htim4 , milliseconds);
+	__HAL_TIM_SET_COUNTER(&htim4 , 200);
 }
 
 Timer& Timer::getInstance()
@@ -51,6 +51,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
 	if(htim->Instance == TIM4)
 	{
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
 		Program::Timer::getInstance().timeout();
 //		HAL_TIM_Base_Stop(&htim4);
 //		stopEngines();

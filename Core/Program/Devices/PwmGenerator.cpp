@@ -25,7 +25,7 @@ void PwmGenerator::stopGenerating()
 
 void PwmGenerator::setPwmSignalFilling(uint16_t filling)
 {
-	__HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , 999);
+	__HAL_TIM_SET_COMPARE(&htim3 , TIM_CHANNEL_1 , filling);
 }
 
 PwmGenerator& PwmGenerator::getInstance()
