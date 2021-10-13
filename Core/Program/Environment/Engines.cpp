@@ -72,8 +72,8 @@ void Engines::turnLeft()
 
 void Engines::turnRight()
 {
-	setRightEngineDriveBackwards();
-	setLeftEngineDriveForward();
+	setLeftEngineDriveBackwards();
+	setRightEngineDriveForward();
 	runEngines();
 }
 

@@ -43,4 +43,48 @@ public:
 	virtual EventDescriptorType what() const override;
 };
 
+class MoveForward : public BluetoothEvent
+{
+public:
+	static constexpr auto event_descriptor{"MoveForward"};
+public:
+	virtual EventDescriptorType what() const override
+	{
+		return event_descriptor;
+	}
+};
+
+class MoveBackwards : public BluetoothEvent
+{
+public:
+	static constexpr auto event_descriptor{"MoveBackwards"};
+public:
+	virtual EventDescriptorType what() const override
+	{
+		return event_descriptor;
+	}
+};
+
+class TurnLeft : public BluetoothEvent
+{
+public:
+	static constexpr auto event_descriptor{"TurnLeft"};
+public:
+	virtual EventDescriptorType what() const override
+	{
+		return event_descriptor;
+	}
+};
+
+class TurnRight : public BluetoothEvent
+{
+public:
+	static constexpr auto event_descriptor{"TurnRight"};
+public:
+	virtual EventDescriptorType what() const override
+	{
+		return event_descriptor;
+	}
+};
+
 }

@@ -29,8 +29,8 @@ void UartDevice::dataArrived()
 {
 	auto& temp_buf = current_buffer_;
 
-	changeBuffer();
-	startReceivingData();
+//	changeBuffer();
+//	startReceivingData();
 
 	if(on_data_arrived_action)
 	{

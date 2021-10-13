@@ -15,11 +15,31 @@ BluetoothPort::BluetoothPort()
 
 void BluetoothPort::parseIncomingData(const std::vector<uint8_t>& data)
 {
-	Dispatcher::getInstance().post(BluetoothDataArrivedEvent{});
+//	Dispatcher::getInstance().post(BluetoothDataArrivedEvent{});
 
-//	TaskQueue::getInstance().addTask([&data]{
-//			HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(data.data()) , data.size(), 100);
-//	});
+	if(data[1] == 'f')
+	{
+		Dispatcher::getInstance().post(MoveForward{});
+	}
+
+	if(data[1] == 'b')
+	{
+		Dispatcher::getInstance().post(MoveBackwards{});
+	}
+
+	if(data[1] == 'r')
+	{
+		Dispatcher::getInstance().post(TurnRight{});
+	}
+
+	if(data[1] == 'l')
+	{
+		Dispatcher::getInstance().post(TurnLeft{});
+	}
+
+	TaskQueue::getInstance().addTask([&data]{
+			HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(data.data()) , data.size(), 100);
+	});
 }
 
 void BluetoothPort::postTaskToTaskQueue(BluetoothEvent&& event)

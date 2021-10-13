@@ -170,12 +170,33 @@ int main(void)
 
   using namespace std::placeholders;
 
-  observer.subscribeEventResponse(Program::BluetoothDataArrivedEvent::event_descriptor ,
+  observer.subscribeEventResponse(Program::MoveForward::event_descriptor,
 		  []
 		   {
 				   //disable auto DMA cycle reload
 				   Program::Engines::getInstance().driveForward();
 		   });
+
+  observer.subscribeEventResponse(Program::MoveBackwards::event_descriptor,
+  		  []
+  		   {
+  				   //disable auto DMA cycle reload
+  				   Program::Engines::getInstance().driveBackwards();
+  		   });
+
+  observer.subscribeEventResponse(Program::TurnLeft::event_descriptor,
+  		  []
+  		   {
+  				   //disable auto DMA cycle reload
+  				   Program::Engines::getInstance().turnLeft();
+  		   });
+
+  observer.subscribeEventResponse(Program::TurnRight::event_descriptor,
+    		  []
+    		   {
+    				   //disable auto DMA cycle reload
+    				   Program::Engines::getInstance().turnRight();
+    		   });
 
   	  dispatcher.subscribeEventGroup(Program::EventGroup::BluetoothEvents,
 		  	  	  	  	  	  	 std::bind(&Program::BluetoothEventObserver::handle , observer , _1) );
