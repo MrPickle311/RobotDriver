@@ -4,15 +4,37 @@
 namespace Program
 {
 
-UartDevice::UartDevice()
+UartDevice::UartDevice():
+		current_buffer_{first_buffer_}
 {
+}
+
+void UartDevice::changeBuffer()
+{
+	if(&current_buffer_ == &first_buffer_)
+	{
+		current_buffer_ = second_buffer_;
+		return;
+	}
+
+	current_buffer_ = first_buffer_;
+}
+
+void UartDevice::startReceivingData()
+{
+	HAL_UART_Receive_DMA(&huart1, current_buffer_.data() , current_buffer_.size());
 }
 
 void UartDevice::dataArrived()
 {
+	auto& temp_buf = current_buffer_;
+
+	changeBuffer();
+	startReceivingData();
+
 	if(on_data_arrived_action)
 	{
-		on_data_arrived_action(buffer_);
+		on_data_arrived_action(temp_buf);
 	}
 }
 
@@ -20,18 +42,18 @@ void UartDevice::dataTransmitted()
 {
 	if(on_data_transmitted_action)
 	{
-		on_data_transmitted_action(buffer_);
+		on_data_transmitted_action(current_buffer_);
 	}
 }
 
 void UartDevice::waitForData(uint16_t bytes_count)
 {
-	if(bytes_count != buffer_.size())
+	if(bytes_count != current_buffer_.size())
 	{
 		resizeBuffer(bytes_count);
 	}
 
-	HAL_UART_Receive_DMA(&huart1, buffer_.data() , bytes_count);
+	startReceivingData();
 }
 
 void UartDevice::transmitData(UartDevice::StorageType<DataType> bytes)
@@ -41,12 +63,13 @@ void UartDevice::transmitData(UartDevice::StorageType<DataType> bytes)
 
  UartDevice::StorageType<UartDevice::DataType> UartDevice::getBufferedData()
 {
-	return buffer_;
+	return first_buffer_;
 }
 
 void UartDevice::resizeBuffer(uint16_t size)
 {
-	buffer_.resize(size);
+	first_buffer_.resize(size);
+	second_buffer_.resize(size);
 }
 
 

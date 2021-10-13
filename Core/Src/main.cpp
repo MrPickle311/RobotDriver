@@ -173,6 +173,7 @@ int main(void)
   observer.subscribeEventResponse(Program::BluetoothDataArrivedEvent::event_descriptor ,
 		  []
 		   {
+				   //disable auto DMA cycle reload
 				   Program::Engines::getInstance().driveForward();
 		   });
 

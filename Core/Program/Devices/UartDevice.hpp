@@ -13,9 +13,14 @@ public:
 	using DataType = uint8_t;
 	template<typename T>
 	using StorageType = std::vector<T>;
-	using ActionHandlerType = std::function<void(const std::vector<uint8_t>&)>;
+	using ActionHandlerType = std::function<void(std::vector<uint8_t>)>;
 private:
-	 StorageType<DataType> buffer_;
+	 StorageType<DataType> first_buffer_;
+	 StorageType<DataType> second_buffer_;
+	 StorageType<DataType>& current_buffer_;
+private:
+	 void changeBuffer();
+	 void startReceivingData();
 public:
 	ActionHandlerType on_data_arrived_action;
 	ActionHandlerType on_data_transmitted_action;
