@@ -63,57 +63,6 @@
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-volatile  uint8_t byte = 10;
-
-volatile uint8_t cmd[2] = { 0 , 0 };
-
-volatile uint8_t isTurnOn = 0;
-
-void turnOnLed()
-{
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET);
-	isTurnOn = 1;
-}
-
-void turnOffLed()
-{
-	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
-	isTurnOn = 0;
-}
-
-/*
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-//	HAL_UART_Transmit(&huart2, const_cast<uint8_t*>(cmd) , 2, 100);
-
-	if(cmd[1] == 'f')
-	{
-		driveForward();
-		startEngines();
-		HAL_TIM_Base_Start(&htim4);
-	}
-
-	if(cmd[1] == 'b')
-	{
-		driveBackward();
-		startEngines();
-		HAL_TIM_Base_Start(&htim4);
-	}
-	if(cmd[1] == 'l')
-	{
-		turnLeft();
-		startEngines();
-		HAL_TIM_Base_Start(&htim4);
-	}
-	if(cmd[1] == 'r')
-	{
-		turnRight();
-		startEngines();
-		HAL_TIM_Base_Start(&htim4);
-	}
-
-	HAL_UART_Receive_IT(&huart1,const_cast<uint8_t*>(cmd) , 2);
-}*/
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
